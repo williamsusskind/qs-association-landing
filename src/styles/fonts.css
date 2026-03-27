@@ -1,0 +1,8 @@
+/* Satoshi font - loaded from CDN */
+@font-face {
+  font-family: 'Satoshi:Medium';
+  src: url('https://cdn.fontshare.com/wf/RWPGQEMMJVHRN6LTI5MQZRISULPHUAKF/LCZQQQ6CBQR6KLMPXBKBDHXYCCJMYIEE/YQBP5KNROBJP7XKA4AH723BNZGGCW5MC.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
