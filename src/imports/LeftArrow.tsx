@@ -5,7 +5,7 @@ export default function LeftArrow() {
     <div className="relative size-full" data-name="left arrow">
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 512 512">
         <g id="left arrow">
-          <path d={svgPaths.p8bcd080} fill="var(--fill-0, black)" id="Vector" />
+          <path d={svgPaths.p8bcd080} fill="currentColor" id="Vector" />
         </g>
       </svg>
     </div>

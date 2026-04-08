@@ -1,6 +1,6 @@
 import { useState } from "react";
 import profileImage from "@/assets/IMG_8160.jpg";
-import { siteConfig } from "@/config/siteConfig";
+import { useSiteConfig } from "@/config/SiteConfigContext";
 
 interface FAQItem {
   question: string;
@@ -40,31 +40,31 @@ const faqs: FAQItem[] = [
 
 function FAQAccordion({ question, answer, isOpen, onToggle }: FAQItem & { isOpen: boolean; onToggle: () => void }) {
   return (
-    <div className="border-b border-white/5">
+    <div className="border-b border-gray-100">
       <button
         onClick={onToggle}
         className="w-full text-left py-8 flex items-center justify-between gap-4 group hover:opacity-80 transition-opacity"
       >
-        <span className="font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] text-white">
+        <span className="font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] text-gray-900">
           {question}
         </span>
-        <div 
+        <div
           className="flex-shrink-0 w-6 h-6 flex items-center justify-center transition-transform duration-200"
           style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M6 9L12 15L18 9" stroke="#d7d128" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M6 9L12 15L18 9" stroke="var(--brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </button>
-      <div 
+      <div
         className="overflow-hidden transition-all duration-300"
-        style={{ 
+        style={{
           maxHeight: isOpen ? '500px' : '0',
           opacity: isOpen ? 1 : 0
         }}
       >
-        <div className="pb-8 pr-8 font-['Satoshi:Medium',sans-serif] text-[14px] sm:text-[15px] text-white/60 leading-[26px]">
+        <div className="pb-8 pr-8 font-['Satoshi:Medium',sans-serif] text-[14px] sm:text-[15px] text-gray-500 leading-[26px]">
           {answer}
         </div>
       </div>
@@ -73,16 +73,17 @@ function FAQAccordion({ question, answer, isOpen, onToggle }: FAQItem & { isOpen
 }
 
 export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void; onSignUp: () => void }) {
+  const siteConfig = useSiteConfig();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="bg-[#070b16] min-h-screen w-full px-4 py-12 sm:py-16">
+    <div className="bg-white min-h-screen w-full px-4 py-12 sm:py-16">
       <div className="max-w-[700px] mx-auto">
-        
+
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="flex items-center gap-2 mb-16 sm:mb-20 text-white/40 hover:text-white/80 transition-colors group"
+          className="flex items-center gap-2 mb-16 sm:mb-20 text-gray-400 hover:text-gray-900 transition-colors group"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -92,10 +93,10 @@ export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void;
 
         {/* Mission Section */}
         <div className="mb-24 sm:mb-32">
-          <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[44px] text-white mb-10 sm:mb-12 leading-[1.2]">
+          <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[44px] text-gray-900 mb-10 sm:mb-12 leading-[1.2]">
             Our Mission
           </h1>
-          <div className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-white/70 leading-[28px] space-y-5">
+          <div className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-600 leading-[28px] space-y-5">
             <p>
               At QuickSecure, I believe a reliable panic solution is a basic necessity for every school. When emergencies happen, schools need a direct, dependable way to get help and communicate clearly, without friction, complexity, or hesitation.
             </p>
@@ -105,7 +106,7 @@ export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void;
             <p>
               This is about restoring trust in communication during emergencies and making sure no school is left without the tools they need when it matters most. It's one step toward our larger goal of building a single pane of glass for all things school safety and operations.
             </p>
-            <p className="text-[14px] sm:text-[15px] italic text-white/50 pt-6">
+            <p className="text-[14px] sm:text-[15px] italic text-gray-400 pt-6">
               — William Susskind<br />
               CTO, QuickSecure
             </p>
@@ -123,10 +124,10 @@ export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void;
 
         {/* FAQ Section */}
         <div className="mb-20">
-          <h2 className="font-['Satoshi:Medium',sans-serif] text-[24px] sm:text-[28px] text-white mb-10">
+          <h2 className="font-['Satoshi:Medium',sans-serif] text-[24px] sm:text-[28px] text-gray-900 mb-10">
             Frequently Asked Questions
           </h2>
-          <div className="border-t border-white/5">
+          <div className="border-t border-gray-100">
             {faqs.map((faq, index) => (
               <FAQAccordion key={index} question={faq.question} answer={faq.answer} isOpen={openIndex === index} onToggle={() => setOpenIndex(openIndex === index ? null : index)} />
             ))}
@@ -134,17 +135,17 @@ export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void;
         </div>
 
         {/* CTA Section */}
-        <div className="pt-16 border-t border-white/5">
-          <div className="bg-[rgba(215,209,40,0.05)] p-10 sm:p-12 rounded-[20px] border border-[rgba(215,209,40,0.2)] text-center">
-            <h3 className="font-['Satoshi:Medium',sans-serif] text-[22px] sm:text-[26px] text-white mb-3">
+        <div className="pt-16 border-t border-gray-100">
+          <div className="bg-brand/5 p-10 sm:p-12 rounded-[20px] border border-brand/20 text-center">
+            <h3 className="font-['Satoshi:Medium',sans-serif] text-[22px] sm:text-[26px] text-gray-900 mb-3">
               Ready to get started?
             </h3>
-            <p className="font-['Satoshi:Medium',sans-serif] text-[14px] sm:text-[15px] text-white/60 mb-8">
+            <p className="font-['Satoshi:Medium',sans-serif] text-[14px] sm:text-[15px] text-gray-500 mb-8">
               {siteConfig.moreInfo.ctaSubtext}
             </p>
             <button
               onClick={onSignUp}
-              className="bg-[#d7d128] text-[#070b16] font-['Satoshi:Medium',sans-serif] text-[15px] px-10 py-4 rounded-[12278342px] hover:bg-[#e8e238] transition-all hover:scale-105"
+              className="bg-brand text-brand-text font-['Satoshi:Medium',sans-serif] text-[15px] px-10 py-4 rounded-[12278342px] hover:bg-brand-hover transition-all hover:scale-105"
             >
               {siteConfig.moreInfo.ctaButton}
             </button>

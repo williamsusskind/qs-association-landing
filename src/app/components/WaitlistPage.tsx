@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { siteConfig } from "@/config/siteConfig";
+import { useSiteConfig, useSchool } from "@/config/SiteConfigContext";
 
 interface WaitlistPageProps {
   onBack: () => void;
@@ -9,6 +9,8 @@ interface WaitlistPageProps {
 }
 
 export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSuccess }: WaitlistPageProps) {
+  const siteConfig = useSiteConfig();
+  const school = useSchool();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -45,7 +47,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
           return 'This field is required.';
         }
         return '';
-      
+
       case 'email':
         if (!value.trim()) {
           return 'This field is required.';
@@ -56,7 +58,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
           return 'Must be valid email. example@yourdomain.com';
         }
         return '';
-      
+
       case 'phone':
         if (!value.trim()) {
           return 'This field is required.';
@@ -66,7 +68,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
           return 'Must be a phone number. 503-555-1212';
         }
         return '';
-      
+
       default:
         return '';
     }
@@ -74,7 +76,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all fields before submission
     const newErrors = {
       firstName: validateField('firstName', formData.firstName),
@@ -83,7 +85,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       phone: validateField('phone', formData.phone),
       school: validateField('school', formData.school),
     };
-    
+
     // Check if there are any errors
     const hasErrors = Object.values(newErrors).some(error => error !== '');
     if (hasErrors) {
@@ -97,7 +99,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       });
       return;
     }
-    
+
     // Validate phone number
     const digitsOnly = formData.phone.replace(/\D/g, '');
     if (digitsOnly.length !== 10) {
@@ -108,7 +110,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       setTouched({ ...touched, phone: true });
       return;
     }
-    
+
     // Check for letters
     if (/[a-zA-Z]/.test(formData.phone)) {
       setErrors({
@@ -118,7 +120,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       setTouched({ ...touched, phone: true });
       return;
     }
-    
+
     setIsSubmitting(true);
 
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -128,7 +130,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
         const res = await fetch(`${apiUrl}/waitlist`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({ ...formData, schoolSlug: school?.slug ?? null }),
         });
         if (!res.ok) throw new Error(`Server responded with ${res.status}`);
       }
@@ -177,7 +179,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       ...formData,
       [e.target.name]: e.target.value,
     });
-    
+
     // Clear phone error when user types
     if (e.target.name === "phone") {
       setErrors({
@@ -193,7 +195,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
       ...touched,
       [name]: true,
     });
-    
+
     const error = validateField(name, value);
     setErrors({
       ...errors,
@@ -203,25 +205,25 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
   if (isSubmitted) {
     return (
-      <div className="bg-[#070b16] min-h-screen w-full flex items-center justify-center px-6 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20">
+      <div className="bg-white min-h-screen w-full flex items-center justify-center px-6 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20">
         <div className="max-w-[800px] w-full">
           {/* Header Section - Left Aligned */}
-          <motion.div 
+          <motion.div
             className="mb-[56px] sm:mb-[64px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <motion.h1 
-              className="font-['Satoshi:Medium',sans-serif] text-[40px] sm:text-[48px] md:text-[56px] text-white mb-[16px] leading-[1.2]"
+            <motion.h1
+              className="font-['Satoshi:Medium',sans-serif] text-[40px] sm:text-[48px] md:text-[56px] text-gray-900 mb-[16px] leading-[1.2]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
             >
               Welcome, {formData.firstName}, to School Safety Reimagined
             </motion.h1>
-            <motion.p 
-              className="font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] md:text-[20px] text-white/60"
+            <motion.p
+              className="font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] md:text-[20px] text-gray-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
@@ -229,15 +231,15 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               Where panic buttons are a basic necessity.
             </motion.p>
           </motion.div>
-          
+
           {/* Feedback Section */}
-          <motion.div 
+          <motion.div
             className="mb-[32px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           >
-            <label htmlFor="feedback" className="block font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] text-white mb-[16px]">
+            <label htmlFor="feedback" className="block font-['Satoshi:Medium',sans-serif] text-[16px] sm:text-[18px] text-gray-900 mb-[16px]">
               Any thoughts, questions, or feedback?
             </label>
             <motion.textarea
@@ -245,7 +247,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
               disabled={isFeedbackSubmitted}
-              className="w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] rounded-[12px] px-[20px] py-[16px] font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] focus:border-[rgba(215,209,40,0.5)] resize-none h-[140px] sm:h-[160px] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gray-100 border border-gray-200 rounded-[12px] px-[20px] py-[16px] font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 focus:border-brand/50 resize-none h-[140px] sm:h-[160px] disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="We'd love to hear from you..."
               whileFocus={{ scale: 1.01 }}
               transition={{ duration: 0.2 }}
@@ -267,7 +269,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               <motion.button
                 onClick={handleFeedbackSubmit}
                 disabled={!feedback.trim()}
-                className="mt-3 w-full bg-[#d7d128] font-['Satoshi:Medium',sans-serif] px-[32px] py-[12px] rounded-[10px] text-[#070b16] text-[16px] transition-all duration-300 hover:bg-[#e5df35] hover:shadow-[0_0_20px_rgba(215,209,40,0.6)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
+                className="mt-3 w-full bg-brand font-['Satoshi:Medium',sans-serif] px-[32px] py-[12px] rounded-[10px] text-brand-text text-[16px] transition-all duration-300 hover:bg-brand-hover hover:shadow-[0_0_20px_rgba(var(--brand-r),var(--brand-g),var(--brand-b),0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
                 whileHover={{ scale: feedback.trim() ? 1.02 : 1 }}
                 whileTap={{ scale: feedback.trim() ? 0.98 : 1 }}
                 aria-label="Submit feedback"
@@ -278,22 +280,22 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
           </motion.div>
 
           {/* Divider */}
-          <motion.div 
+          <motion.div
             className="flex items-center gap-4 my-[40px] sm:my-[48px]"
             initial={{ opacity: 0, scaleX: 0 }}
             animate={{ opacity: 1, scaleX: 1 }}
             transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
           >
-            <div className="flex-1 h-[1px] bg-white/10"></div>
-            <motion.span 
-              className="font-['Satoshi:Medium',sans-serif] text-[12px] sm:text-[13px] text-white/40 uppercase tracking-wider"
+            <div className="flex-1 h-[1px] bg-gray-200"></div>
+            <motion.span
+              className="font-['Satoshi:Medium',sans-serif] text-[12px] sm:text-[13px] text-gray-400 uppercase tracking-wider"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.8 }}
             >
               or
             </motion.span>
-            <div className="flex-1 h-[1px] bg-white/10"></div>
+            <div className="flex-1 h-[1px] bg-gray-200"></div>
           </motion.div>
 
           {/* Contact Section */}
@@ -302,11 +304,11 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9, ease: "easeOut" }}
           >
-            <p className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-white/70">
+            <p className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-500">
               Contact us at{' '}
-              <motion.a 
-                href="mailto:contact.us@quicksecure.us" 
-                className="text-[#d7d128] hover:text-[#e5df35] transition-colors underline decoration-[#d7d128]/40 underline-offset-2"
+              <motion.a
+                href="mailto:contact.us@quicksecure.us"
+                className="text-brand hover:text-brand-hover transition-colors underline decoration-brand/40 underline-offset-2"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
@@ -320,13 +322,13 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
   }
 
   return (
-    <div className="bg-[#070b16] min-h-screen w-full flex items-center justify-center px-4 py-8">
+    <div className="bg-white min-h-screen w-full flex items-center justify-center px-4 py-8">
       <div className="max-w-[500px] w-full">
         {/* Back button */}
         <button
           onClick={onBack}
           aria-label="Go back to home page"
-          className="flex items-center gap-[8px] text-white/60 hover:text-white transition-colors mb-[24px] font-['Satoshi:Medium',sans-serif] text-[14px]"
+          className="flex items-center gap-[8px] text-gray-400 hover:text-gray-900 transition-colors mb-[24px] font-['Satoshi:Medium',sans-serif] text-[14px]"
         >
           <svg className="w-[16px] h-[16px]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
@@ -336,15 +338,15 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
         {/* Header */}
         <div className="mb-[32px]">
-          <div className="bg-[rgba(215,209,40,0.15)] inline-flex items-center justify-center px-[16px] py-[8px] rounded-[12278342px] mb-[16px]">
-            <div className="font-['Satoshi:Medium',sans-serif] text-[#d7d128] text-[12px]">
+          <div className="bg-brand/10 inline-flex items-center justify-center px-[16px] py-[8px] rounded-[12278342px] mb-[16px]">
+            <div className="font-['Satoshi:Medium',sans-serif] text-brand text-[12px]">
               {siteConfig.form.badge}
             </div>
           </div>
-          <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[36px] text-white mb-[12px]">
+          <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[36px] text-gray-900 mb-[12px]">
             {siteConfig.form.heading}
           </h1>
-          <p className="font-['Satoshi:Medium',sans-serif] text-[14px] text-white/80">
+          <p className="font-['Satoshi:Medium',sans-serif] text-[14px] text-gray-500">
             {siteConfig.form.subtext}
           </p>
         </div>
@@ -353,7 +355,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
         <form onSubmit={handleSubmit} className="space-y-[14px]">
           {/* First Name */}
           <div>
-            <label htmlFor="firstName" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-white/80 mb-[6px]">
+            <label htmlFor="firstName" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-gray-600 mb-[6px]">
               First Name
             </label>
             <input
@@ -364,10 +366,10 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] ${
-                touched.firstName && errors.firstName 
-                  ? 'border-red-500 focus:border-red-500' 
-                  : 'border-[rgba(255,255,255,0.2)] focus:border-[rgba(215,209,40,0.5)]'
+              className={`w-full bg-gray-100 border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 ${
+                touched.firstName && errors.firstName
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-brand/50'
               }`}
               placeholder="Jane"
             />
@@ -385,7 +387,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
           {/* Last Name */}
           <div>
-            <label htmlFor="lastName" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-white/80 mb-[6px]">
+            <label htmlFor="lastName" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-gray-600 mb-[6px]">
               Last Name
             </label>
             <input
@@ -396,10 +398,10 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] ${
-                touched.lastName && errors.lastName 
-                  ? 'border-red-500 focus:border-red-500' 
-                  : 'border-[rgba(255,255,255,0.2)] focus:border-[rgba(215,209,40,0.5)]'
+              className={`w-full bg-gray-100 border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 ${
+                touched.lastName && errors.lastName
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-brand/50'
               }`}
               placeholder="Smith"
             />
@@ -417,7 +419,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
           {/* Email */}
           <div>
-            <label htmlFor="email" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-white/80 mb-[6px]">
+            <label htmlFor="email" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-gray-600 mb-[6px]">
               Email
             </label>
             <input
@@ -428,10 +430,10 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] ${
-                touched.email && errors.email 
-                  ? 'border-red-500 focus:border-red-500' 
-                  : 'border-[rgba(255,255,255,0.2)] focus:border-[rgba(215,209,40,0.5)]'
+              className={`w-full bg-gray-100 border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 ${
+                touched.email && errors.email
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-brand/50'
               }`}
               placeholder="jane@example.com"
             />
@@ -449,7 +451,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
           {/* Phone Number */}
           <div>
-            <label htmlFor="phone" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-white/80 mb-[6px]">
+            <label htmlFor="phone" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-gray-600 mb-[6px]">
               Phone Number
             </label>
             <input
@@ -460,10 +462,10 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] ${
-                touched.phone && errors.phone 
-                  ? 'border-red-500 focus:border-red-500' 
-                  : 'border-[rgba(255,255,255,0.2)] focus:border-[rgba(215,209,40,0.5)]'
+              className={`w-full bg-gray-100 border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 ${
+                touched.phone && errors.phone
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-brand/50'
               }`}
               placeholder="(555) 123-4567"
             />
@@ -481,7 +483,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
 
           {/* School */}
           <div>
-            <label htmlFor="school" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-white/80 mb-[6px]">
+            <label htmlFor="school" className="block font-['Satoshi:Medium',sans-serif] text-[13px] text-gray-600 mb-[6px]">
               School
             </label>
             <input
@@ -492,10 +494,10 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full backdrop-blur-[6px] bg-[rgba(255,255,255,0.1)] border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-white placeholder:text-white/40 outline-none transition-all duration-300 focus:bg-[rgba(255,255,255,0.15)] ${
-                touched.school && errors.school 
-                  ? 'border-red-500 focus:border-red-500' 
-                  : 'border-[rgba(255,255,255,0.2)] focus:border-[rgba(215,209,40,0.5)]'
+              className={`w-full bg-gray-100 border rounded-[10px] px-[16px] py-[10px] font-['Satoshi:Medium',sans-serif] text-[15px] text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-300 focus:bg-gray-50 ${
+                touched.school && errors.school
+                  ? 'border-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:border-brand/50'
               }`}
               placeholder="Lincoln High School"
             />
@@ -515,7 +517,7 @@ export default function WaitlistPage({ onBack, initialEmail = "", onSubmitSucces
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#d7d128] font-['Satoshi:Medium',sans-serif] px-[32px] py-[12px] rounded-[10px] text-[#070b16] text-[16px] transition-all duration-300 hover:bg-[#e5df35] hover:shadow-[0_0_20px_rgba(215,209,40,0.6)] hover:scale-[1.02] mt-[8px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
+            className="w-full bg-brand font-['Satoshi:Medium',sans-serif] px-[32px] py-[12px] rounded-[10px] text-brand-text text-[16px] transition-all duration-300 hover:bg-brand-hover hover:shadow-[0_0_20px_rgba(var(--brand-r),var(--brand-g),var(--brand-b),0.3)] hover:scale-[1.02] mt-[8px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none"
             aria-label="Submit request access form"
           >
             {isSubmitting ? siteConfig.form.submittingButton : siteConfig.form.submitButton}

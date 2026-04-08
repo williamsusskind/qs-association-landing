@@ -4,3 +4,4 @@ dist
 .env.*
 *.local
 /IMG_8160.jpg
+public/qr-codes
