@@ -14,6 +14,8 @@ export function resolveSchoolFromPath(pathname: string): SchoolEntry | null {
 export function buildSiteConfig(school: SchoolEntry | null): SiteConfig {
   if (!school) return defaultConfig;
 
+  const isSchool = school.type === "school";
+
   return {
     association: {
       name: school.name,
@@ -21,28 +23,34 @@ export function buildSiteConfig(school: SchoolEntry | null): SiteConfig {
       logoAlt: `${school.name} logo`,
     },
     home: {
-      badge:
-        school.badge ?? "From Our Community",
-      heading: `A Free Panic Button for\n${school.name}.`,
+      badge: school.badge ?? (isSchool ? "From Our Community" : "Exclusive Partner Access"),
+      heading: isSchool
+        ? `A Free Panic Button for\n${school.name}.`
+        : `A Free Panic Button for\nEvery Member School.`,
       description:
         school.description ??
-        `QuickSecure was started by graduates of Paul Duke STEM High School right here in Georgia. We're giving ${school.name} a free panic button to help keep our community safe. Alerts go straight to dispatch and guide staff through exactly what to do.`,
-      socialProof:
-        school.socialProof ?? defaultConfig.home.socialProof,
+        (isSchool
+          ? `QuickSecure was started by graduates of Paul Duke STEM High School right here in Georgia. We're giving ${school.name} a free panic button to help keep our community safe. Alerts go straight to dispatch and guide staff through exactly what to do.`
+          : `${school.name} has partnered with QuickSecure to bring every member school a free panic button. Alerts go straight to dispatch and guide staff through exactly what to do.`),
+      socialProof: school.socialProof ?? defaultConfig.home.socialProof,
     },
     form: {
       badge: defaultConfig.form.badge,
       heading: defaultConfig.form.heading,
       subtext:
         school.formSubtext ??
-        "Fill out your information to get your school's free panic button.",
+        (isSchool
+          ? "Fill out your information to get your school's free panic button."
+          : `Fill out your information to request access through the ${school.name} partnership.`),
       submitButton: defaultConfig.form.submitButton,
       submittingButton: defaultConfig.form.submittingButton,
     },
     moreInfo: {
       ctaSubtext:
         school.ctaSubtext ??
-        `Help us keep ${school.name} and our community safe.`,
+        (isSchool
+          ? `Help us keep ${school.name} and our community safe.`
+          : `Join 500+ member schools with access through ${school.name}.`),
       ctaButton: defaultConfig.moreInfo.ctaButton,
     },
   };

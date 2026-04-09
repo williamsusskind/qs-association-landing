@@ -1,6 +1,6 @@
 import { useState } from "react";
-import profileImage from "@/assets/IMG_8160.jpg";
-import { useSiteConfig } from "@/config/SiteConfigContext";
+import { useSiteConfig, useSchool } from "@/config/SiteConfigContext";
+import type { SchoolEntry } from "@/config/schools";
 
 interface FAQItem {
   question: string;
@@ -72,8 +72,59 @@ function FAQAccordion({ question, answer, isOpen, onToggle }: FAQItem & { isOpen
   );
 }
 
+function PartnerNoteCard({ school }: { school: SchoolEntry }) {
+  const note = school.partnerNote
+    ?? "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+  const name = school.partnerName ?? "Partner Representative";
+  const title = school.partnerTitle ?? school.name;
+
+  return (
+    <div>
+      {school.partnerPhotoSrc && (
+        <div className="w-[80px] h-[80px] rounded-full overflow-hidden mb-6 grayscale">
+          <img
+            src={school.partnerPhotoSrc}
+            alt={name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <div className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-600 leading-[28px] space-y-5">
+        {note.split("\n\n").map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+        <p className="text-[14px] sm:text-[15px] italic text-gray-400 pt-6">
+          — {name}<br />
+          {title}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FounderNoteCard() {
+  return (
+    <div>
+      <div className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-600 leading-[28px] space-y-5">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+        <p>
+          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+        <p className="text-[14px] sm:text-[15px] italic text-gray-400 pt-6">
+          — William Susskind<br />
+          CTO, QuickSecure
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void; onSignUp: () => void }) {
   const siteConfig = useSiteConfig();
+  const school = useSchool();
+  const isAssociation = school?.type === "association";
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -90,38 +141,25 @@ export default function MoreInfoPage({ onBack, onSignUp }: { onBack: () => void;
           </svg>
           <span className="font-['Satoshi:Medium',sans-serif] text-[14px]">Back to Home</span>
         </button>
+      </div>
 
-        {/* Mission Section */}
-        <div className="mb-24 sm:mb-32">
-          <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[44px] text-gray-900 mb-10 sm:mb-12 leading-[1.2]">
-            Our Mission
-          </h1>
-          <div className="font-['Satoshi:Medium',sans-serif] text-[15px] sm:text-[16px] text-gray-600 leading-[28px] space-y-5">
-            <p>
-              At QuickSecure, I believe a reliable panic solution is a basic necessity for every school. When emergencies happen, schools need a direct, dependable way to get help and communicate clearly, without friction, complexity, or hesitation.
-            </p>
-            <p>
-              That belief is why we're offering a free version of our panic app. With one tap, alerts are sent directly to dispatch through our integration with RapidSOS, giving first responders the critical information they need immediately, while allowing schools to share updates as situations unfold.
-            </p>
-            <p>
-              This is about restoring trust in communication during emergencies and making sure no school is left without the tools they need when it matters most. It's one step toward our larger goal of building a single pane of glass for all things school safety and operations.
-            </p>
-            <p className="text-[14px] sm:text-[15px] italic text-gray-400 pt-6">
-              — William Susskind<br />
-              CTO, QuickSecure
-            </p>
+      {/* Mission Section */}
+      <div className={`mx-auto ${isAssociation ? 'max-w-[950px]' : 'max-w-[700px]'} mb-24 sm:mb-32 px-4`}>
+        <h1 className="font-['Satoshi:Medium',sans-serif] text-[32px] sm:text-[44px] text-gray-900 mb-10 sm:mb-12 leading-[1.2]">
+          Our Mission
+        </h1>
+
+        {isAssociation && school ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+            <PartnerNoteCard school={school} />
+            <FounderNoteCard />
           </div>
+        ) : (
+          <FounderNoteCard />
+        )}
+      </div>
 
-          {/* Profile Image */}
-          <div className="mt-10 sm:mt-14 w-full overflow-hidden rounded-[16px] group cursor-pointer">
-            <img
-              src={profileImage}
-              alt="Team"
-              className="w-full h-auto transition-all duration-500 grayscale group-hover:grayscale-0"
-            />
-          </div>
-        </div>
-
+      <div className="max-w-[700px] mx-auto px-4">
         {/* FAQ Section */}
         <div className="mb-20">
           <h2 className="font-['Satoshi:Medium',sans-serif] text-[24px] sm:text-[28px] text-gray-900 mb-10">

@@ -80,7 +80,7 @@ export default function Wireframe({ onNavigateToWaitlist, onNavigateToMoreInfo }
       <img
         src={siteConfig.association.logoSrc}
         alt={siteConfig.association.logoAlt}
-        className="fixed top-6 left-6 z-50 h-[40px] w-auto"
+        className="fixed top-6 left-6 z-50 h-[56px] w-auto"
       />
 
       {/* More Info Button - Top Right */}
